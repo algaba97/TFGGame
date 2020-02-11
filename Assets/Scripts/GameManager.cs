@@ -58,7 +58,7 @@ public class GameManager : MonoBehaviour
                 StartGame();
             }
         }
-        if(Input.GetKeyUp("r")){
+        if(GameOver&&Input.GetKeyUp("r")){
             EndGame();
             StartGame();
         }
@@ -131,7 +131,7 @@ public class GameManager : MonoBehaviour
 
     private void CreatePowerUp(Vector3 position)
     {
-        Instantiate(PowerUpList[Random.Range(0, 3)], position, Quaternion.identity, transform.parent);
+        Instantiate(PowerUpList[Random.Range(0, 3)], position, Quaternion.identity, transform);
     }
 
     private void EndGame(){
@@ -142,13 +142,13 @@ public class GameManager : MonoBehaviour
     private void OnDestroyBase(BaseLogic baseLogic)
     {
         EndGame();
-        informationDisplay.DisplayText("Base Destroyed \n Game Over");
+        informationDisplay.DisplayText("Base Destroyed \n Game Over \n Press R");
     }
 
     private void OnDestroyPlayer(PlayerController player)
     {
         EndGame();
-        informationDisplay.DisplayText("You Died \n Game Over");
+        informationDisplay.DisplayText("Base Destroyed \n Game Over \n Press R");
 
     }
 
