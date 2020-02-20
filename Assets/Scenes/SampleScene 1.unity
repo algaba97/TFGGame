@@ -152,8 +152,8 @@ Transform:
   - {fileID: 1461861377}
   - {fileID: 2097548748}
   - {fileID: 152535748}
-  - {fileID: 1259226103}
   - {fileID: 221730511}
+  - {fileID: 1259226103}
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -523,8 +523,6 @@ GameObject:
   - component: {fileID: 221730513}
   - component: {fileID: 221730514}
   - component: {fileID: 221730515}
-  - component: {fileID: 221730517}
-  - component: {fileID: 221730516}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -645,7 +643,7 @@ Transform:
   - {fileID: 1992693991}
   - {fileID: 1827488107}
   m_Father: {fileID: 61970593}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &221730512
 Rigidbody2D:
@@ -705,50 +703,11 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 221730508}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b9ccf80489c6b604ba7b652e94d5f64c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &221730516
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 221730508}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3066360d484fc6245bb7705d88648b0b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxStep: 1
-  player: {fileID: 221730509}
-  kek: 0
---- !u!114 &221730517
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 221730508}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d1c4e0b1822b495aa52bc52839ecb30, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_BrainParameters:
-    vectorObservationSize: 1
-    numStackedVectorObservations: 1
-    vectorActionSize: 01000000
-    vectorActionDescriptions: []
-    vectorActionSpaceType: 1
-  m_Model: {fileID: 5022602860645237092, guid: 8a126002c48d357478d75c803cdd044f, type: 3}
-  m_InferenceDevice: 0
-  m_BehaviorType: 2
-  m_BehaviorName: player
-  m_TeamID: 0
-  m_UseChildSensors: 0
 --- !u!1 &366599525
 GameObject:
   m_ObjectHideFlags: 0
@@ -1762,7 +1721,7 @@ Transform:
   m_Children:
   - {fileID: 776762423}
   m_Father: {fileID: 61970593}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1259226104
 MonoBehaviour:
@@ -2376,7 +2335,6 @@ MonoBehaviour:
   _enemiesToSpawn: 0
   _enemiesPerWave: 0
   _waveRate: 0
-  _levelRound: 0
   enemiesPrefab:
   - {fileID: 7400306947081896781, guid: ef9c96a13565f72419eef31ce9fd4991, type: 3}
   - {fileID: 4508858963869770471, guid: 1a7337e774386614bbc14d2b76f6b27d, type: 3}

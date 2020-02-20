@@ -23,6 +23,8 @@ public class PlayerController : Hittable
     private System.Action<PlayerController> _onDestroyPlayerAction=null;
 
     private bool _alive;
+
+    public bool alive{get{return _alive;}}
     
     private bool _isMoving;
     public bool isMoving
@@ -144,6 +146,14 @@ public class PlayerController : Hittable
 
     public void ResetPlayer(){
         stats = intialstats;
+    }
+    /// <summary>
+    /// Awake is called when the script instance is being loaded.
+    /// </summary>
+    void Awake()
+    {
+        rigidBody = GetComponent<Rigidbody2D>();
+        
     }
 
     // Start is called before the first frame update
