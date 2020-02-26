@@ -66,6 +66,8 @@ public class EnemySpawnerManager : MonoBehaviour
         _levelRound = level;
     }
     public void StartRound(){
+        _canSpawn = true;
+
         StartCoroutine(SpawnEnemiesCoroutine());
     }
 

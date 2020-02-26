@@ -12,6 +12,12 @@ public class GameManager : MonoBehaviour
 
     public EnemyListController enemyList;
 
+    public List<OnRoundListener> onRoundListeners;
+
+    public List<OnEnemyKillListener> onEnemyKillListeners;
+
+    public AgentPlayer agent;
+
     private int _roundNumber;
 
     public int roundNumber
@@ -43,22 +49,27 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void Start()
     {
+        onEnemyKillListeners = new List<OnEnemyKillListener>();
+        onRoundListeners = new List<OnRoundListener>();
         _roundNumber = 0;
         _killedEnemies = 0;
         GameOver = false;
-        
+        agent.Init(this);
         GameStarted = false;
         informationDisplay.DisplayText("Press any key");
     }
 
     private void Update()
     {
-        if (!GameStarted){
-            if (Input.anyKey){
+        if (!GameStarted)
+        {
+            if (player.isMoving)
+            {
                 StartGame();
             }
         }
-        if(GameOver&&Input.GetKeyUp("r")){
+        if (GameOver)
+        {
             EndGame();
             StartGame();
         }
@@ -82,16 +93,21 @@ public class GameManager : MonoBehaviour
         int enemiesPerWave = 1 + (int)System.Math.Log(roundNumber, 3);
         float waveRate = 5.0f;
 
-        int levelRound = 1 + roundNumber/5;
+        int levelRound = 1 + roundNumber / 5;
 
         _pendingEnemies = enemiesToSpawn;
-        spawnerManager.SetSpawnParameters(enemiesToSpawn, enemiesPerWave, waveRate,levelRound);
+        spawnerManager.SetSpawnParameters(enemiesToSpawn, enemiesPerWave, waveRate, levelRound);
     }
 
     private void OnRoundFinished()
     {
         if (!GameOver)
         {
+            foreach (var l in onRoundListeners)
+            {
+                l.OnRoundOver(_roundNumber);
+            }
+
             OnRoundStart();
         }
     }
@@ -99,6 +115,10 @@ public class GameManager : MonoBehaviour
     private void OnRoundStart()
     {
         _roundNumber++;
+        foreach (var l in onRoundListeners)
+        {
+            l.OnRoundStart(_roundNumber);
+        }
         CalculateRound();
         spawnerManager.StartRound();
         informationDisplay.DisplayText("Round " + _roundNumber, 3.0f);
@@ -117,6 +137,10 @@ public class GameManager : MonoBehaviour
         {
             CreatePowerUp(enemy.transform.position);
         }
+        foreach (var l in onEnemyKillListeners)
+        {
+            l.OnEnemyKill(enemy);
+        }
     }
     public List<GameObject> PowerUpList;
     private int _modulePowerUp = 3;
@@ -134,9 +158,11 @@ public class GameManager : MonoBehaviour
         Instantiate(PowerUpList[Random.Range(0, 3)], position, Quaternion.identity, transform);
     }
 
-    private void EndGame(){
+    private void EndGame()
+    {
         GameOver = true;
         spawnerManager.StopSpawns();
+        agent.Done();
     }
 
     private void OnDestroyBase(BaseLogic baseLogic)
