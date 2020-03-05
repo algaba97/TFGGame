@@ -69,6 +69,8 @@ public struct EntityStats
         c.range += b.range;
         return c;
     }
+
+    
 }
 static public class Utils
 {

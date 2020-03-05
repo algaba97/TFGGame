@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class PlayerController : Hittable
+public class PlayerController : Hittable, OnRangeListener
 {
     public EntityStats stats;
 
@@ -14,11 +14,13 @@ public class PlayerController : Hittable
     Rigidbody2D rigidBody;
     private LifeShapeController _lifeShapeController;
 
-    AttackRangeController rangeController;
+    public AttackRangeController rangeController;
 
     GunController _gun;
 
     SortedDictionary<long, EnemyController> enemyDictionary;
+
+    public List<OnShootListener> onShootListeners;
 
     private System.Action<PlayerController> _onDestroyPlayerAction=null;
 
@@ -76,13 +78,17 @@ public class PlayerController : Hittable
     private void ShootFirstEnemy()
     {
         _gun.Shoot(30.0f, GetFirstEnemy().transform.position, stats.strengh.Value,OnShoot);
+        foreach (var l in onShootListeners)
+        {
+            l.OnShoot();
+        }
 
     }
 
 
 
 
-    public void OnRangeEnter(AttackRangeController rangeController, GameObject gO)
+    public void OnRangeEnter(GameObject gO)
     {
         EnemyController enemy = gO.GetComponent<EnemyController>();
         if (enemy != null)
@@ -92,7 +98,7 @@ public class PlayerController : Hittable
         }
     }
 
-    public void OnRangeExit(AttackRangeController rangeController, GameObject gO)
+    public void OnRangeExit( GameObject gO)
     {
         EnemyController enemy = gO.GetComponent<EnemyController>();
         if (enemy != null)
@@ -138,6 +144,7 @@ public class PlayerController : Hittable
     public void Init(System.Action<PlayerController> OnDestroyPlayerAction = null){
         _onDestroyPlayerAction = OnDestroyPlayerAction;
         stats = intialstats;
+        ApplyNewStats();
         _lifeShapeController.UpdateShadow(stats.maxLifes,stats.currentLifes);
         _alive =true;
         enemyDictionary.Clear();
@@ -146,6 +153,7 @@ public class PlayerController : Hittable
 
     public void ResetPlayer(){
         stats = intialstats;
+        ApplyNewStats();
     }
     /// <summary>
     /// Awake is called when the script instance is being loaded.
@@ -153,6 +161,7 @@ public class PlayerController : Hittable
     void Awake()
     {
         rigidBody = GetComponent<Rigidbody2D>();
+        onShootListeners = new List<OnShootListener>();
         
     }
 
@@ -163,7 +172,7 @@ public class PlayerController : Hittable
     /// </summary>
     void Start()
     {
-        intialstats = stats;
+        intialstats = stats + new EntityStats();
         intialPos = transform.position *1;
         enemyDictionary = new SortedDictionary<long, EnemyController>();
         rigidBody = GetComponent<Rigidbody2D>();
@@ -174,8 +183,8 @@ public class PlayerController : Hittable
         _lifeShapeController.Init();
         _lifeShapeController.UpdateShadow(stats.maxLifes,stats.currentLifes);
 
-        rangeController.SetOnEnterAction(OnRangeEnter);
-        rangeController.SetOnExitAction(OnRangeExit);
+        rangeController.onRangeListeners.Add(this);
+
         _gun = GetComponent<GunController>();
         _alive =true;
     }
@@ -194,8 +203,6 @@ public class PlayerController : Hittable
     public void ModifyStats(EntityStats sum){
         stats = stats +sum;
         ApplyNewStats();
-        
-
     }
 
     private void ApplyNewStats(){

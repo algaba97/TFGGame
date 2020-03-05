@@ -16,7 +16,6 @@ public class ItemLogic : MonoBehaviour
     /// <param name="other">The other Collider2D involved in this collision.</param>
     void OnTriggerEnter2D(Collider2D other)
     {
-        print("enter");
         PlayerController player = other.gameObject.GetComponent<PlayerController>();
         if(player != null){
             player.ModifyStats(stats);

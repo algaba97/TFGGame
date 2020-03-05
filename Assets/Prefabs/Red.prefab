@@ -242,8 +242,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stats:
-    maxLifes: 3
-    currentLifes: 3
+    maxLifes: 2
+    currentLifes: 2
     fireRate:
       factor: -50
       baseValue: 1000

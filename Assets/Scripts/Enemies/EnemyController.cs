@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyController : Hittable
+public class EnemyController : Hittable, OnRangeListener
 {
     public static long enemyCount = 0;
     private long _enemyID;
@@ -28,7 +28,7 @@ public class EnemyController : Hittable
 
     protected System.Action<EnemyController> _onDieAction = null;
 
-    protected virtual void OnRangeEnter(AttackRangeController attackRange, GameObject gameObject)
+    public void OnRangeEnter(GameObject gameObject)
     {
 
         if (gameObject.transform == target)
@@ -43,7 +43,7 @@ public class EnemyController : Hittable
 
 
 
-    protected virtual void OnRangeExit(AttackRangeController attackRange, GameObject gameObject)
+    public void OnRangeExit(GameObject gameObject)
     {
         targetReached = false;
 
@@ -55,14 +55,14 @@ public class EnemyController : Hittable
         attacking = true;
         StartCoroutine(AttackCouroutine(hittable));
         StartCoroutine(AttackAnimationCouroutine());
-        Hit();
+        //Hit();
     }
 
     protected IEnumerator AttackAnimationCouroutine()
     {
         while (attacking)
         {
-            transform.Rotate(0, 0, 10f);
+            //transform.Rotate(0, 0, 10f);
             yield return new WaitForEndOfFrame();
         }
     }
@@ -92,8 +92,8 @@ public class EnemyController : Hittable
         _lifeShape.Init();
         _lifeShape.UpdateShadow(stats.maxLifes,stats.currentLifes);
 
-        attackRange.SetOnEnterAction(OnRangeEnter);
-        attackRange.SetOnExitAction(OnRangeExit);
+
+        attackRange.onRangeListeners.Add(this);
         targetReached = false;
         rigidBody = GetComponent<Rigidbody2D>();
 

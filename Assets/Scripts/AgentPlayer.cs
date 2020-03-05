@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MLAgents;
-public class AgentPlayer : Agent, OnRoundListener, OnEnemyKillListener
+public class AgentPlayer : Agent, OnRoundListener, OnEnemyKillListener,OnShootListener, OnRangeListener
 {
     public PlayerController player;
     public BaseLogic baseLogic;
@@ -19,23 +19,52 @@ public class AgentPlayer : Agent, OnRoundListener, OnEnemyKillListener
 
     public float rayDistance;
 
-    int layer = 1 <<11;
+    protected bool shooted = false;
+
+    protected int enemiesOnRange=0;
 
 
+    private int lastEnemiesOnRange=0;
+    int layer = 1 << 11;
 
+
+    public void OnRangeEnter(GameObject gO)
+    {
+        if (gO.tag == "Enemy")
+        {
+            enemiesOnRange ++;
+        }
+    }
+
+    public void OnRangeExit( GameObject gO)
+    {
+        
+        if (gO.tag == "Enemy")
+        {
+           enemiesOnRange --;
+        }
+    }
 
     public void Init(GameManager gameManager){
         gameManager.onEnemyKillListeners.Add(this);
         gameManager.onRoundListeners.Add(this);
+        player.onShootListeners.Add(this);
+        player.rangeController.onRangeListeners.Add(this);
 
     }
     public override void AgentReset()
     {
-         lastKnowBaseLifes= 10; lastKnowLifes = 3;
+         lastKnowBaseLifes= 10; 
+         lastKnowLifes = 3;
+         enemyKilled = false;
+         shooted = false;
+         enemiesOnRange = lastEnemiesOnRange = 0;
+         currentRound =0;
     }
 
     public override void AgentAction(float[] vectorAction)
     {
+        
         byte dir = 0x0;
         if (vectorAction[0] > 0.5)
         {
@@ -56,47 +85,48 @@ public class AgentPlayer : Agent, OnRoundListener, OnEnemyKillListener
         if (player != null)
             player.Move((Utils.DirectionEnumerator)dir);
         
+        //SetReward(0.05f*currentRound);
+
         if(enemyKilled){
-            SetReward(1.0f);      
+            AddReward(currentRound*1.0f);      
             enemyKilled = false;  
         }
 
-        if(lastKnowBaseLifes != baseLogic.lifesCounter){
-            //SetReward(-1.0f);
-            lastKnowBaseLifes = baseLogic.lifesCounter;      
-            
+        //AddReward(enemiesOnRange*0.10f);
+        
+
+        if(lastKnowBaseLifes < baseLogic.lifesCounter){
+            //AddReward(-1.5f);
+            lastKnowBaseLifes = baseLogic.lifesCounter;
         }
 
-        if(lastKnowLifes != player.stats.currentLifes){
-            //SetReward(-1.0f);
+        if(lastKnowLifes < player.stats.currentLifes){
+            //AddReward(-1.5f);
             lastKnowLifes = player.stats.currentLifes;      
-            
         }
-
-
-        if(roundFinished){
-            SetReward(currentRound);      
-            roundFinished = false;  
+        if(shooted){
+            shooted = false;
+            //AddReward(0.5f);
         }
-
     }
     public override void CollectObservations()
     {
         // Target and Agent positions
-        AddVectorObs(player.transform.localPosition);
-        AddVectorObs(baseLogic.transform.localPosition);
+        AddVectorObs(player.stats.range.level);
         AddVectorObs(currentRound);
-        AddVectorObs(player.stats.range.ValueFloat);
-        AddVectorObs(player.stats.speed.ValueFloat);
-        AddVectorObs(player.stats.currentLifes);
+        AddVectorObs(enemiesOnRange);
+        AddVectorObs(player.transform.localPosition);
+        AddVectorObs(baseLogic.transform.position-player.transform.position);
 
         RaycastHit2D hitinfo;
         
-        for (int i = 0; i < 36; i++)
+        for (int i = 0; i < 72; i++)
         {
-            Vector2 aux = Quaternion.AngleAxis(i*(360/36), Vector3.forward) * Vector2.up;
-            hitinfo = Physics2D.Raycast(transform.position,aux,rayDistance,layer);
-             AddVectorObs(hitinfo.distance);
+            Vector2 aux = Quaternion.AngleAxis(i*5.0f, Vector3.forward) * Vector2.up;
+            hitinfo = Physics2D.Raycast(player.transform.position,aux,rayDistance,layer);
+            
+            AddVectorObs(aux*hitinfo.distance);
+            //Debug.DrawRay(baseLogic.transform.position, aux * hitinfo.distance, Color.white);
              
         }
 
@@ -165,7 +195,12 @@ public class AgentPlayer : Agent, OnRoundListener, OnEnemyKillListener
         
     }
     public void OnRoundStart(int roundNumber){
-        roundNumber = currentRound;
+        currentRound = roundNumber;
+        Debug.Log("round: "+currentRound);
+    }
+
+    public void OnShoot(){
+        shooted = true;
     }
 
 }

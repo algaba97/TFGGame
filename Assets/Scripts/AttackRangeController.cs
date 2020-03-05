@@ -6,22 +6,12 @@ public class AttackRangeController : MonoBehaviour
 
 
     Collider2D _collider;
+
+    public List<OnRangeListener> onRangeListeners = new List<OnRangeListener>();
     
 
 
     public float range;
-    System.Action<AttackRangeController,GameObject> OnEnterAction;
-    System.Action<AttackRangeController,GameObject> OnExitAction;
-
-    public void SetOnEnterAction(System.Action<AttackRangeController,GameObject> action){
-        OnEnterAction = action;
-    }
-
-    public void SetOnExitAction(System.Action<AttackRangeController,GameObject> action){
-        OnExitAction = action;
-    }
-
-
 
     /// <summary>
     /// Sent when another object enters a trigger collider attached to this
@@ -30,9 +20,9 @@ public class AttackRangeController : MonoBehaviour
     /// <param name="other">The other Collider2D involved in this collision.</param>
     void OnTriggerEnter2D(Collider2D other)
     {
-        if(OnEnterAction!=null){
-            OnEnterAction(this,other.gameObject);
-
+        foreach (var l in onRangeListeners)
+        {
+            l.OnRangeEnter(other.gameObject);
         }
 
     }
@@ -46,25 +36,25 @@ public class AttackRangeController : MonoBehaviour
     /// <param name="other">The other Collider2D involved in this collision.</param>
     void OnTriggerExit2D(Collider2D other)
     {
-        if(OnExitAction != null)
-            OnExitAction(this,other.gameObject);
+        foreach (var l in onRangeListeners)
+        {
+            l.OnRangeExit(other.gameObject);
+        }
        
     }
 
     public void SetRange(float newRange){
         range = newRange;
         //transform.localScale = new Vector3(range, range, 1);
+        transform.localScale = new Vector3(range, range, 1);
+
 
     }
 
     void Start(){
         _collider = GetComponent<Collider2D>();
+        SetRange(range);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        transform.localScale = new Vector3(range, range, 1);
-
-    }
+    
 }

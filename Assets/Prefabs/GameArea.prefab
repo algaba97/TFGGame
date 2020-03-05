@@ -806,15 +806,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 46
+    vectorObservationSize: 153
     numStackedVectorObservations: 1
     vectorActionSize: 02000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 1
-  m_Model: {fileID: 5022602860645237092, guid: 106a91d7769073e40be020dc68a07bdb, type: 3}
+  m_Model: {fileID: 0}
   m_InferenceDevice: 0
   m_BehaviorType: 0
-  m_BehaviorName: Soccer
+  m_BehaviorName: Player
   m_TeamID: 0
   m_UseChildSensors: 1
 --- !u!114 &5874132286739281387
@@ -836,7 +836,7 @@ MonoBehaviour:
   player: {fileID: 5874132287080532628}
   baseLogic: {fileID: 5874132285907771297}
   rayDistance: 40
-  timeBetweenDecisionsAtInference: 0.025
+  timeBetweenDecisionsAtInference: 0.05
 --- !u!1 &5874132286813229458
 GameObject:
   m_ObjectHideFlags: 0
@@ -1426,6 +1426,7 @@ MonoBehaviour:
       factor: 0
       baseValue: 0
       level: 0
+  rangeController: {fileID: 0}
 --- !u!50 &5874132287080532617
 Rigidbody2D:
   serializedVersion: 4
