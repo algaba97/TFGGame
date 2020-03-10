@@ -806,7 +806,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 153
+    vectorObservationSize: 48
     numStackedVectorObservations: 1
     vectorActionSize: 02000000
     vectorActionDescriptions: []
@@ -1427,6 +1427,7 @@ MonoBehaviour:
       baseValue: 0
       level: 0
   rangeController: {fileID: 0}
+  velocity: {x: 0, y: 0}
 --- !u!50 &5874132287080532617
 Rigidbody2D:
   serializedVersion: 4

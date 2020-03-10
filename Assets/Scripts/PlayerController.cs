@@ -26,6 +26,8 @@ public class PlayerController : Hittable, OnRangeListener
 
     private bool _alive;
 
+    public Vector2 velocity;
+
     public bool alive{get{return _alive;}}
     
     private bool _isMoving;
@@ -191,6 +193,7 @@ public class PlayerController : Hittable, OnRangeListener
     public void Move(Utils.DirectionEnumerator dir)
     {
         rigidBody.velocity = Utils.DirectionToVector(dir) * stats.speed.ValueFloat;
+        velocity = rigidBody.velocity;
         if ((byte)dir != 0x0)
             isMoving = true;
         else

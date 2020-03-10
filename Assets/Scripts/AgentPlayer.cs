@@ -88,20 +88,20 @@ public class AgentPlayer : Agent, OnRoundListener, OnEnemyKillListener,OnShootLi
         //SetReward(0.05f*currentRound);
 
         if(enemyKilled){
-            AddReward(currentRound*1.0f);      
+            AddReward(1.0f);      
             enemyKilled = false;  
         }
 
         //AddReward(enemiesOnRange*0.10f);
         
 
-        if(lastKnowBaseLifes < baseLogic.lifesCounter){
-            //AddReward(-1.5f);
+        if(lastKnowBaseLifes > baseLogic.lifesCounter){
+            AddReward(-0.3f);
             lastKnowBaseLifes = baseLogic.lifesCounter;
         }
 
-        if(lastKnowLifes < player.stats.currentLifes){
-            //AddReward(-1.5f);
+        if(lastKnowLifes > player.stats.currentLifes){
+            AddReward(-1.0f);
             lastKnowLifes = player.stats.currentLifes;      
         }
         if(shooted){
@@ -109,27 +109,43 @@ public class AgentPlayer : Agent, OnRoundListener, OnEnemyKillListener,OnShootLi
             //AddReward(0.5f);
         }
     }
+
+    Queue<Vector2> auxQ = new Queue<Vector2>();
     public override void CollectObservations()
     {
         // Target and Agent positions
-        AddVectorObs(player.stats.range.level);
-        AddVectorObs(currentRound);
-        AddVectorObs(enemiesOnRange);
+        AddVectorObs(player.velocity);
         AddVectorObs(player.transform.localPosition);
         AddVectorObs(baseLogic.transform.position-player.transform.position);
 
         RaycastHit2D hitinfo;
-        
+        int j = 0;
+        Vector2 player2dPos = new Vector2(player.transform.localPosition.x,player.transform.localPosition.z);
         for (int i = 0; i < 72; i++)
         {
             Vector2 aux = Quaternion.AngleAxis(i*5.0f, Vector3.forward) * Vector2.up;
             hitinfo = Physics2D.Raycast(player.transform.position,aux,rayDistance,layer);
-            
-            AddVectorObs(aux*hitinfo.distance);
-            //Debug.DrawRay(baseLogic.transform.position, aux * hitinfo.distance, Color.white);
-             
+            if(hitinfo.distance>0.5f){ 
+                Vector2 hitPos2D = new Vector2(hitinfo.transform.localPosition.x,hitinfo.transform.localPosition.z);
+                auxQ.Enqueue(aux*hitinfo.distance);
+            }
+            else{
+                j++;
+            }
+            //Debug.DrawRay(baseLogic.transform.position, aux * hitinfo.distance, Color.white); 
         }
+        int addedObs = 20;
+        
+        while(auxQ.Count > 0 && addedObs >0){
+            AddVectorObs(auxQ.Dequeue());
+            addedObs--;
+        }
+        while(j>0&& addedObs >0){
+            j--;
+            addedObs--;
+            AddVectorObs(new Vector2(0.0f,0.0f));
 
+        }
     }
     public override float[] Heuristic()
     {
