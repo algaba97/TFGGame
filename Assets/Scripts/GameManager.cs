@@ -89,11 +89,11 @@ public class GameManager : MonoBehaviour
 
     private void CalculateRound()
     {
-        int enemiesToSpawn = roundNumber;
+        int enemiesToSpawn = 5;
         int enemiesPerWave = 1 + (int)System.Math.Log(roundNumber, 3);
         float waveRate = 5.0f;
 
-        int levelRound = 1 + roundNumber / 5;
+        int levelRound = 1;
 
         _pendingEnemies = enemiesToSpawn;
         spawnerManager.SetSpawnParameters(enemiesToSpawn, enemiesPerWave, waveRate, levelRound);
